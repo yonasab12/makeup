@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booka — Liya, Makeup Artist in Addis Ababa</title>
+<meta name="description" content="Book Liya, a vetted makeup artist who comes to your door anywhere in Addis Ababa.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===========================================================
+   BOOKA — design tokens
+   =========================================================== */
+:root{
+  --rose: #C4185B;
+  --rose-deep: #8E0F42;
+  --rose-light: #F9C9DA;
+  --blush: #FFF6F3;
+  --ink: #241B22;
+  --ink-soft: #6B5A63;
+  --gold: #C9A24B;
+  --line: #EEDCE2;
+  --white: #FFFFFF;
+
+  --font-display: "Fraunces", serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --shadow-soft: 0 20px 50px -20px rgba(140, 30, 75, 0.25);
+  --wrap: 1160px;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--blush);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+h1,h2,h3{ font-family:var(--font-display); margin:0; line-height:1.08; font-weight:600; }
+p{ margin:0; }
+button{ font-family:inherit; cursor:pointer; }
+
+.wrap{ max-width:var(--wrap); margin:0 auto; padding:0 24px; }
+
+/* subtle grain so flat pink fields don't look plasticky */
+.noise{
+  position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.eyebrow{
+  font-size:12.5px; text-transform:uppercase; letter-spacing:.14em;
+  color:var(--rose); font-weight:700; margin:0 0 10px;
+}
+.eyebrow.center{ text-align:center; }
+.section-title{ font-size:clamp(28px,4vw,42px); }
+.section-title.center{ text-align:center; margin-bottom:44px; }
+.section-sub{ color:var(--ink-soft); margin-top:8px; }
+
+/* Buttons */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border-radius:999px; border:1.5px solid transparent; padding:13px 24px;
+  font-weight:700; font-size:14.5px; transition:transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+  white-space:nowrap;
+}
+.btn-primary{ background:var(--rose); color:#fff; box-shadow:0 12px 24px -10px rgba(196,24,91,.55); }
+.btn-primary:hover{ background:var(--rose-deep); transform:translateY(-1px); }
+.btn-outline{ border-color:var(--rose); color:var(--rose); background:transparent; }
+.btn-outline:hover{ background:var(--rose-light); }
+.btn-ghost{ background:var(--rose-light); color:var(--rose-deep); }
+.btn-ghost:hover{ background:var(--rose); color:#fff; }
+.btn-block{ width:100%; }
+
+/* ===========================================================
+   NAV
+   =========================================================== */
+.nav{ position:sticky; top:0; z-index:200; backdrop-filter:blur(10px); background:rgba(255,246,243,.82); border-bottom:1px solid var(--line); }
+.nav-inner{ display:flex; align-items:center; justify-content:space-between; height:76px; }
+.logo{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:700; font-size:22px; color:var(--rose-deep); }
+.logo-mark{ color:var(--rose); display:flex; }
+.nav-links{ display:flex; gap:32px; }
+.nav-links a{ font-weight:600; font-size:14.5px; color:var(--ink-soft); position:relative; }
+.nav-links a:hover{ color:var(--rose-deep); }
+.nav-actions{ display:flex; align-items:center; gap:14px; }
+.hamburger{ display:none; flex-direction:column; gap:4px; background:none; border:none; padding:8px; }
+.hamburger span{ width:22px; height:2px; background:var(--ink); display:block; border-radius:2px; }
+
+/* ===========================================================
+   HERO
+   =========================================================== */
+.hero{ padding:64px 0 40px; position:relative; }
+.hero::before{
+  content:""; position:absolute; top:-120px; right:-160px; width:520px; height:520px; border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, var(--rose-light), transparent 70%); z-index:0; opacity:.9;
+}
+.hero-inner{ display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center; position:relative; z-index:1; }
+.hero h1{ font-size:clamp(36px,5vw,58px); letter-spacing:-.01em; }
+.hero h1 em{ font-style:italic; color:var(--rose); }
+.hero-sub{ margin-top:20px; font-size:17px; color:var(--ink-soft); max-width:46ch; line-height:1.55; }
+.hero-actions{ display:flex; gap:14px; margin-top:30px; flex-wrap:wrap; }
+.hero-stats{ display:flex; gap:34px; margin-top:44px; }
+.hero-stats strong{ display:block; font-family:var(--font-display); font-size:26px; color:var(--rose-deep); }
+.hero-stats span{ font-size:12.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; }
+
+.hero-panel{ position:relative; }
+.search-card{
+  background:var(--white); border-radius:var(--radius-lg); padding:28px; box-shadow:var(--shadow-soft);
+  border:1px solid var(--line); transform:rotate(1.3deg);
+}
+.search-card-title{ font-family:var(--font-display); font-size:19px; font-weight:600; }
+.search-card-sub{ color:var(--ink-soft); font-size:13.5px; margin-top:4px; }
+.search-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }
+.field{ display:flex; flex-direction:column; gap:6px; font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; }
+.field input, .field select{
+  font-family:var(--font-body); font-size:14.5px; font-weight:500; color:var(--ink); text-transform:none; letter-spacing:normal;
+  padding:11px 13px; border-radius:var(--radius-sm); border:1.5px solid var(--line); background:var(--blush);
+}
+.field input:focus, .field select:focus{ outline:2px solid var(--rose); outline-offset:1px; border-color:var(--rose); }
+.chip-row{ display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 22px; }
+.chip{
+  border:1.5px solid var(--line); background:var(--white); padding:8px 15px; border-radius:999px;
+  font-size:13px; font-weight:700; color:var(--ink-soft); transition:.18s;
+}
+.chip:hover{ border-color:var(--rose); }
+.chip.is-active{ background:var(--rose); border-color:var(--rose); color:#fff; }
+
+.route-badge{
+  position:absolute; bottom:-26px; left:-18px; background:var(--white); border-radius:999px; padding:10px 18px 10px 10px;
+  display:flex; align-items:center; gap:10px; box-shadow:var(--shadow-soft); border:1px solid var(--line);
+}
+.route-badge strong{ display:block; font-size:13px; }
+.route-badge span{ font-size:11.5px; color:var(--ink-soft); }
+.route-dot{ width:34px; height:34px; border-radius:50%; background:conic-gradient(var(--rose), var(--gold), var(--rose)); flex-shrink:0; }
+.route-dot.small{ width:20px; height:20px; }
+
+/* ===========================================================
+   TRUST STRIP
+   =========================================================== */
+.trust-strip{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:20px 0; margin-top:56px; }
+.trust-inner{ display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
+.trust-inner > span{ font-size:12.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); font-weight:700; }
+.trust-areas{ display:flex; gap:10px; flex-wrap:wrap; }
+.trust-areas span{
+  font-size:13px; font-weight:700; color:var(--rose-deep); background:var(--rose-light); padding:6px 14px; border-radius:999px;
+}
+
+/* ===========================================================
+   HOW IT WORKS / route map
+   =========================================================== */
+.how{ padding:100px 0 80px; }
+.route-map{ position:relative; }
+.route-svg{ width:100%; height:70px; display:block; margin-bottom:6px; }
+.route-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
+.route-step{ background:var(--white); border:1px solid var(--line); border-radius:var(--radius-md); padding:26px; }
+.route-icon{
+  font-family:var(--font-display); font-size:14px; font-weight:700; color:var(--rose);
+  width:38px; height:38px; border-radius:50%; border:1.5px solid var(--rose-light); display:flex; align-items:center; justify-content:center;
+  margin-bottom:16px;
+}
+.route-step h3{ font-size:19px; margin-bottom:8px; }
+.route-step p{ color:var(--ink-soft); font-size:14.5px; line-height:1.5; }
+
+/* ===========================================================
+   SERVICES
+   =========================================================== */
+.services{ padding:0 0 90px; }
+.service-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:16px; }
+.service-card{
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius-md); padding:22px 16px; text-align:center;
+  transition:transform .18s ease, box-shadow .18s ease; cursor:pointer;
+}
+.service-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-soft); border-color:var(--rose-light); }
+.service-card .ico{ font-size:26px; margin-bottom:10px; }
+.service-card span{ font-weight:700; font-size:13.5px; }
+
+/* ===========================================================
+   PROFESSIONALS
+   =========================================================== */
+.pros{ padding:0 0 100px; }
+.section-head{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; gap:20px; flex-wrap:wrap; }
+.pros-count{ font-size:13px; color:var(--ink-soft); font-weight:700; }
+.pros-count span{ color:var(--rose-deep); font-family:var(--font-display); font-size:16px; }
+
+.pro-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.pro-card{
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.pro-card:hover{ transform:translateY(-5px); box-shadow:var(--shadow-soft); }
+.pro-photo{ position:relative; aspect-ratio:4/5; overflow:hidden; background:var(--rose-light); }
+.pro-photo img{ width:100%; height:100%; object-fit:cover; }
+.pro-tag{
+  position:absolute; top:10px; left:10px; background:rgba(36,27,34,.72); color:#fff; font-size:10.5px; font-weight:700;
+  padding:5px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em;
+}
+.pro-body{ padding:15px 16px 18px; }
+.pro-body h3{ font-size:15.5px; font-family:var(--font-body); font-weight:700; }
+.pro-meta{ display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+.pro-meta span{ font-size:12.5px; color:var(--ink-soft); }
+.pro-rating{ font-size:12.5px; font-weight:700; color:var(--rose-deep); display:flex; align-items:center; gap:3px; }
+
+.empty-state{ text-align:center; padding:60px 0; color:var(--ink-soft); font-size:15px; }
+
+/* ===========================================================
+   PORTFOLIO
+   =========================================================== */
+.portfolio{ padding:0 0 100px; }
+.portfolio-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.portfolio-card{ position:relative; border-radius:var(--radius-md); overflow:hidden; aspect-ratio:3/4; }
+.portfolio-card img{ width:100%; height:100%; object-fit:cover; transition:transform .35s ease; }
+.portfolio-card:hover img{ transform:scale(1.06); }
+.portfolio-overlay{
+  position:absolute; inset:auto 0 0 0; padding:14px; background:linear-gradient(0deg, rgba(36,27,34,.85), transparent);
+  color:#fff;
+}
+.portfolio-overlay strong{ display:block; font-size:13.5px; }
+.portfolio-overlay span{ font-size:11.5px; opacity:.85; }
+
+/* ===========================================================
+   CALLOUT
+   =========================================================== */
+.callout{ padding:0 0 100px; }
+.callout-inner{
+  background:linear-gradient(135deg, var(--rose-deep), var(--rose)); border-radius:var(--radius-lg);
+  padding:64px; display:grid; grid-template-columns:1.1fr .9fr; gap:40px; align-items:center; color:#fff; position:relative; overflow:hidden;
+}
+.callout-copy h2{ font-size:clamp(28px,3.6vw,38px); margin:6px 0 14px; }
+.callout-copy p{ opacity:.9; max-width:44ch; line-height:1.55; margin-bottom:26px; }
+.callout .eyebrow{ color:var(--gold); }
+.callout-contacts{ display:flex; gap:22px; margin-bottom:28px; flex-wrap:wrap; }
+.callout-contacts a{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:14.5px; }
+.callout .btn-primary{ background:#fff; color:var(--rose-deep); box-shadow:none; }
+.callout .btn-primary:hover{ background:var(--gold); color:#fff; }
+
+.callout-art{ position:relative; height:280px; }
+.callout-ring{ position:absolute; inset:0; border:1.5px dashed rgba(255,255,255,.4); border-radius:50%; }
+.callout-card{
+  position:absolute; bottom:10px; left:10px; right:40px; background:#fff; color:var(--ink); border-radius:var(--radius-md);
+  padding:20px; box-shadow:0 20px 40px rgba(0,0,0,.25);
+}
+.callout-card p{ font-size:14px; font-style:italic; margin-bottom:8px; }
+.callout-card strong{ font-size:12.5px; color:var(--rose-deep); }
+
+/* ===========================================================
+   FOOTER
+   =========================================================== */
+.footer{ background:var(--ink); color:#f3e9ec; padding:64px 0 0; }
+.footer-inner{ display:flex; justify-content:space-between; gap:40px; padding-bottom:48px; flex-wrap:wrap; }
+.footer-brand .logo{ color:#fff; }
+.footer-brand p{ margin-top:10px; color:#c9b8bf; font-size:14px; max-width:26ch; }
+.footer-cols{ display:flex; gap:56px; flex-wrap:wrap; }
+.footer-cols h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:.08em; color:#c9b8bf; margin-bottom:14px; }
+.footer-cols a{ display:block; font-size:14px; color:#f3e9ec; margin-bottom:10px; opacity:.85; }
+.footer-cols a:hover{ opacity:1; color:var(--rose-light); }
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,.12); padding:20px 24px; display:flex; justify-content:space-between;
+  font-size:12.5px; color:#a8949c; flex-wrap:wrap; gap:8px;
+}
+
+/* ===========================================================
+   MODAL
+   =========================================================== */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(36,27,34,.55); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center;
+  z-index:500; opacity:0; pointer-events:none; transition:opacity .2s ease; padding:20px;
+}
+.modal-backdrop.is-open{ opacity:1; pointer-events:auto; }
+.modal{
+  background:#fff; border-radius:var(--radius-lg); padding:36px; max-width:420px; width:100%; position:relative;
+  transform:translateY(14px); transition:transform .2s ease; box-shadow:var(--shadow-soft);
+}
+.modal-backdrop.is-open .modal{ transform:translateY(0); }
+.modal-close{ position:absolute; top:16px; right:18px; background:none; border:none; font-size:22px; color:var(--ink-soft); line-height:1; }
+.modal h3{ font-size:22px; margin:4px 0 20px; }
+.modal form{ display:flex; flex-direction:column; gap:14px; }
+.modal-note{ margin-top:16px; color:var(--rose-deep); font-weight:700; font-size:13.5px; text-align:center; }
+
+/* ===========================================================
+   REVEAL ANIMATION
+   =========================================================== */
+.reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; transition-delay:var(--delay,0s); }
+.reveal.is-visible{ opacity:1; transform:translateY(0); }
+@media (prefers-reduced-motion:reduce){
+  .reveal{ opacity:1; transform:none; transition:none; }
+  html{ scroll-behavior:auto; }
+}
+
+/* ===========================================================
+   RESPONSIVE
+   =========================================================== */
+@media (max-width:1080px){
+  .service-grid{ grid-template-columns:repeat(3,1fr); }
+  .pro-grid{ grid-template-columns:repeat(3,1fr); }
+  .portfolio-grid{ grid-template-columns:repeat(3,1fr); }
+}
+
+@media (max-width:900px){
+  .hero-inner{ grid-template-columns:1fr; }
+  .hero-panel{ max-width:460px; margin:0 auto; }
+  .callout-inner{ grid-template-columns:1fr; padding:44px 28px; }
+  .callout-art{ display:none; }
+  .route-steps{ grid-template-columns:1fr; }
+  .route-svg{ display:none; }
+}
+
+@media (max-width:760px){
+  .nav-links{ position:absolute; top:76px; left:0; right:0; background:var(--blush); flex-direction:column; padding:20px 24px 26px; gap:18px;
+    border-bottom:1px solid var(--line); transform:translateY(-8px); opacity:0; pointer-events:none; transition:.2s ease; }
+  .nav-links.is-open{ transform:translateY(0); opacity:1; pointer-events:auto; }
+  .hamburger{ display:flex; }
+  .nav-actions .btn-ghost{ display:none; }
+  .service-grid{ grid-template-columns:repeat(2,1fr); }
+  .pro-grid{ grid-template-columns:repeat(2,1fr); }
+  .portfolio-grid{ grid-template-columns:repeat(2,1fr); }
+  .hero-stats{ gap:22px; }
+  .search-row{ grid-template-columns:1fr; }
+}
+
+@media (max-width:480px){
+  .wrap{ padding:0 18px; }
+  .hero{ padding:40px 0 24px; }
+  .search-card{ padding:20px; transform:none; }
+  .route-badge{ left:0; bottom:-20px; }
+  .footer-inner{ flex-direction:column; gap:32px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="noise" aria-hidden="true"></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="logo">
+      <span class="logo-mark">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 16C7 9 12 6 15 6C18 6 23 9 26 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M4 16C7 23 12 26 15 26C18 26 23 23 26 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity="0.35"/>
+          <circle cx="15" cy="16" r="2.6" fill="currentColor"/>
+        </svg>
+      </span>
+      Booka
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#services">Services</a>
+      <a href="#professionals">Professionals</a>
+      <a href="#how">How it works</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost" data-open-modal>Join or sign in</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="wrap hero-inner">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Door-to-door makeup · Addis Ababa</p>
+      <h1>Your makeup look,<br> now delivered <em>to your door.</em></h1>
+      <p class="hero-sub">Meet Liya, a vetted makeup artist in Addis Ababa — book her and she brings the studio to your living room.</p>
+      <div class="hero-actions">
+        <a href="#professionals" class="btn btn-primary">Book Liya</a>
+        <button class="btn btn-outline" data-open-modal>Join as a pro</button>
+      </div>
+      <div class="hero-stats">
+        <div><strong id="statPros">0</strong><span>makeup artist</span></div>
+        <div><strong>1</strong><span>city — Addis Ababa</span></div>
+        <div><strong>4.9</strong><span>average rating</span></div>
+      </div>
+    </div>
+
+    <div class="hero-panel reveal" style="--delay:.1s">
+      <div class="search-card">
+        <p class="search-card-title">Book Liya, your makeup artist</p>
+        <p class="search-card-sub">Search by look, style, or availability in Addis Ababa</p>
+
+        <div class="search-row">
+          <label class="field">
+            <span>Service</span>
+            <input type="text" id="searchText" placeholder="Nails, braids, makeup...">
+          </label>
+          <label class="field">
+            <span>Location</span>
+            <select id="locationSelect">
+              <option value="">Addis Ababa</option>
+              <option>Addis Ababa</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="chip-row" id="chipRow">
+          <button class="chip is-active" data-service="all">All</button>
+          <button class="chip" data-service="Makeup">Makeup</button>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="searchBtn">
+          <span id="matchCount">78</span> matches — search
+        </button>
+      </div>
+
+      <div class="route-badge">
+        <span class="route-dot"></span>
+        <div>
+          <strong>Door-to-door</strong>
+          <span>we travel, you relax</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS / TRUST STRIP -->
+<section class="trust-strip reveal">
+  <div class="wrap trust-inner">
+    <span>Trusted by clients in</span>
+    <div class="trust-areas" id="trustAreas"></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="wrap">
+    <p class="eyebrow center">How it works</p>
+    <h2 class="section-title center">The studio finds its way to you</h2>
+
+    <div class="route-map reveal">
+      <svg class="route-svg" viewBox="0 0 1000 160" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M40,120 C 250,20 400,140 500,80 S 750,10 960,60" fill="none" stroke="url(#routeGrad)" stroke-width="3" stroke-dasharray="1 14" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="routeGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#C4185B"/>
+            <stop offset="1" stop-color="#C9A24B"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="route-steps">
+        <div class="route-step">
+          <div class="route-icon">01</div>
+          <h3>Tell us what you need</h3>
+          <p>Pick a service, your area, and the style you're after.</p>
+        </div>
+        <div class="route-step">
+          <div class="route-icon">02</div>
+          <h3>Match with a rated pro</h3>
+          <p>Compare portfolios, reviews and availability nearby.</p>
+        </div>
+        <div class="route-step">
+          <div class="route-icon">03</div>
+          <h3>They arrive, you relax</h3>
+          <p>Your professional brings every tool — you just open the door.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="wrap">
+    <p class="eyebrow center">Services</p>
+    <h2 class="section-title center">Every look, done by Liya</h2>
+    <div class="service-grid" id="serviceGrid"></div>
+  </div>
+</section>
+
+<!-- PROFESSIONALS -->
+<section class="pros" id="professionals">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Addis Ababa</p>
+        <h2 class="section-title">Meet Liya</h2>
+        <p class="section-sub">Makeup artist, booked door-to-door across Addis Ababa.</p>
+      </div>
+      <p class="pros-count"><span id="proCount">0</span> matches</p>
+    </div>
+    <div class="pro-grid" id="proGrid"></div>
+    <p class="empty-state" id="emptyState" hidden>No professionals match that search yet — try another area or service.</p>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="portfolio" id="portfolio">
+  <div class="wrap">
+    <p class="eyebrow center">Fresh inspiration</p>
+    <h2 class="section-title center">Liya's recent portfolio</h2>
+    <div class="portfolio-grid" id="portfolioGrid"></div>
+  </div>
+</section>
+
+<!-- DOOR TO DOOR CALLOUT -->
+<section class="callout" id="contact">
+  <div class="wrap callout-inner reveal">
+    <div class="callout-copy">
+      <p class="eyebrow">Door-to-door service</p>
+      <h2>Relax — Liya brings the beauty to you.</h2>
+      <p>No commute, no waiting room. Book Liya and she'll set up everything she needs right in your space, anywhere in Addis Ababa.</p>
+      <div class="callout-contacts">
+        <a href="tel:+251934670272">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.6c0-.6.4-1 1-1H7.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8z" stroke="currentColor" stroke-width="1.6"/></svg>
+          +251 934 670 272
+        </a>
+        <a href="#" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z" stroke="currentColor" stroke-width="1.6"/></svg>
+          booka.et
+        </a>
+      </div>
+      <button class="btn btn-primary" data-open-modal>See details</button>
+    </div>
+    <div class="callout-art" aria-hidden="true">
+      <div class="callout-ring"></div>
+      <div class="callout-card">
+        <span class="route-dot small"></span>
+        <p>“Booked Liya for 6pm, she was here in 40 minutes with everything.”</p>
+        <strong>— Selam, Addis Ababa</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <a href="#top" class="logo">
+        <span class="logo-mark">
+          <svg width="26" height="26" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 16C7 9 12 6 15 6C18 6 23 9 26 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M4 16C7 23 12 26 15 26C18 26 23 23 26 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity="0.35"/>
+            <circle cx="15" cy="16" r="2.6" fill="currentColor"/>
+          </svg>
+        </span>
+        Booka
+      </a>
+      <p>Liya — makeup, your way.</p>
+    </div>
+    <div class="footer-cols">
+      <div>
+        <h4>Explore</h4>
+        <a href="#services">Services</a>
+        <a href="#professionals">Professionals</a>
+        <a href="#portfolio">Portfolio</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#how">How it works</a>
+        <a href="#contact">Contact</a>
+        <a href="#" data-open-modal>Join as a pro</a>
+      </div>
+      <div>
+        <h4>Get in touch</h4>
+        <a href="tel:+251934670272">+251 934 670 272</a>
+        <a href="#">booka.et</a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© <span id="year"></span> Booka. All rights reserved.</span>
+    <span>Made for beauty, delivered to your door.</span>
+  </div>
+</footer>
+
+<!-- JOIN / SIGN IN MODAL -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <p class="eyebrow">Join Booka</p>
+    <h3 id="modalTitle">Bring your talent to more doors</h3>
+    <form id="joinForm">
+      <label class="field">
+        <span>Full name</span>
+        <input type="text" required placeholder="Your name">
+      </label>
+      <label class="field">
+        <span>Phone number</span>
+        <input type="tel" required placeholder="+251 9xx xxx xxx">
+      </label>
+      <label class="field">
+        <span>Main service</span>
+        <select required>
+          <option value="">Select a service</option>
+          <option>Makeup</option>
+          <option>Bridal makeup</option>
+          <option>Editorial makeup</option>
+        </select>
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Submit application</button>
+    </form>
+    <p class="modal-note" id="modalNote" hidden>Thanks — we'll reach out within 48 hours.</p>
+  </div>
+</div>
+
+<script>
+/* ===========================================================
+   BOOKA — front-end logic (no backend required)
+   Replace the DATA arrays below with real content / an API call
+   when you connect this to your own backend.
+   =========================================================== */
+
+const SERVICES = [
+  { name: "Makeup",      icon: "💄" },
+  { name: "Bridal",      icon: "💍" },
+  { name: "Editorial",   icon: "✨" },
+  { name: "Natural look", icon: "🌿" },
+];
+
+const PROFESSIONALS = [
+  { name: "Liya", service: "Makeup", area: "Addis Ababa", rating: 4.9, reviews: 46, tag: "Top rated", img: "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=400&q=80" },
+];
+
+const PORTFOLIO = [
+  { title: "Soft glam, evening out",   area: "Addis Ababa, door to door", img: "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=400&q=80" },
+  { title: "Bridal glow",              area: "Addis Ababa, door to door", img: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=80" },
+  { title: "Everyday natural face",    area: "Addis Ababa, door to door", img: "https://images.unsplash.com/photo-1596704017254-9b121068fb31?w=400&q=80" },
+  { title: "Editorial look",           area: "Addis Ababa, door to door", img: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80" },
+];
+
+const AREAS = ["Addis Ababa"];
+
+/* ---------- render: services ---------- */
+const serviceGrid = document.getElementById("serviceGrid");
+serviceGrid.innerHTML = SERVICES.map(s => `
+  <div class="service-card" data-service="${s.name}">
+    <div class="ico">${s.icon}</div>
+    <span>${s.name}</span>
+  </div>
+`).join("");
+
+serviceGrid.addEventListener("click", (e) => {
+  const card = e.target.closest(".service-card");
+  if (!card) return;
+  setActiveChip("all");
+  document.getElementById("professionals").scrollIntoView({ behavior: "smooth" });
+});
+
+/* ---------- render: trust strip ---------- */
+document.getElementById("trustAreas").innerHTML =
+  AREAS.slice(0, 6).map(a => `<span>${a}</span>`).join("");
+
+/* ---------- render: professionals ---------- */
+const proGrid = document.getElementById("proGrid");
+const emptyState = document.getElementById("emptyState");
+const proCount = document.getElementById("proCount");
+const statPros = document.getElementById("statPros");
+const matchCount = document.getElementById("matchCount");
+
+function renderPros(list) {
+  proGrid.innerHTML = list.map(p => `
+    <article class="pro-card">
+      <div class="pro-photo">
+        <img src="${p.img}" alt="${p.name}, ${p.service} professional in ${p.area}" loading="lazy">
+        <span class="pro-tag">${p.tag}</span>
+      </div>
+      <div class="pro-body">
+        <h3>${p.name}</h3>
+        <div class="pro-meta">
+          <span>${p.service} · ${p.area}</span>
+          <span class="pro-rating">★ ${p.rating.toFixed(1)}</span>
+        </div>
+      </div>
+    </article>
+  `).join("");
+  proCount.textContent = list.length;
+  matchCount.textContent = list.length;
+  emptyState.hidden = list.length !== 0;
+  proGrid.hidden = list.length === 0;
+}
+renderPros(PROFESSIONALS);
+statPros.textContent = PROFESSIONALS.length;
+
+/* ---------- render: portfolio ---------- */
+document.getElementById("portfolioGrid").innerHTML = PORTFOLIO.map(p => `
+  <div class="portfolio-card">
+    <img src="${p.img}" alt="${p.title}" loading="lazy">
+    <div class="portfolio-overlay">
+      <strong>${p.title}</strong>
+      <span>${p.area}</span>
+    </div>
+  </div>
+`).join("");
+
+/* ---------- filter logic ---------- */
+let activeService = "all";
+const chipRow = document.getElementById("chipRow");
+const searchText = document.getElementById("searchText");
+const locationSelect = document.getElementById("locationSelect");
+
+document.getElementById("locationSelect").innerHTML +=
+  ""; // areas already hard-coded in HTML to match the reference UI
+
+function setActiveChip(service) {
+  activeService = service;
+  [...chipRow.children].forEach(c => {
+    c.classList.toggle("is-active", c.dataset.service === service || (service === "Wedding" && c.dataset.service === "all"));
+  });
+  applyFilters();
+}
+
+chipRow.addEventListener("click", (e) => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  setActiveChip(chip.dataset.service);
+});
+
+function applyFilters() {
+  const text = searchText.value.trim().toLowerCase();
+  const location = locationSelect.value;
+
+  const filtered = PROFESSIONALS.filter(p => {
+    const matchesService = activeService === "all" || p.service === activeService;
+    const matchesText = !text || p.name.toLowerCase().includes(text) || p.service.toLowerCase().includes(text);
+    const matchesLocation = !location || p.area === location;
+    return matchesService && matchesText && matchesLocation;
+  });
+
+  renderPros(filtered);
+}
+
+searchText.addEventListener("input", applyFilters);
+locationSelect.addEventListener("change", applyFilters);
+document.getElementById("searchBtn").addEventListener("click", (e) => {
+  e.preventDefault();
+  applyFilters();
+  document.getElementById("professionals").scrollIntoView({ behavior: "smooth" });
+});
+
+/* ---------- mobile nav ---------- */
+const hamburger = document.getElementById("hamburger");
+const navLinks = document.getElementById("navLinks");
+hamburger.addEventListener("click", () => {
+  const open = navLinks.classList.toggle("is-open");
+  hamburger.setAttribute("aria-expanded", open);
+});
+navLinks.querySelectorAll("a").forEach(a =>
+  a.addEventListener("click", () => navLinks.classList.remove("is-open"))
+);
+
+/* ---------- modal ---------- */
+const modalBackdrop = document.getElementById("modalBackdrop");
+const modalClose = document.getElementById("modalClose");
+const joinForm = document.getElementById("joinForm");
+const modalNote = document.getElementById("modalNote");
+
+document.querySelectorAll("[data-open-modal]").forEach(btn =>
+  btn.addEventListener("click", () => {
+    modalBackdrop.classList.add("is-open");
+    joinForm.hidden = false;
+    modalNote.hidden = true;
+  })
+);
+modalClose.addEventListener("click", () => modalBackdrop.classList.remove("is-open"));
+modalBackdrop.addEventListener("click", (e) => {
+  if (e.target === modalBackdrop) modalBackdrop.classList.remove("is-open");
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") modalBackdrop.classList.remove("is-open");
+});
+joinForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  joinForm.hidden = true;
+  modalNote.hidden = false;
+});
+
+/* ---------- scroll reveal ---------- */
+const revealEls = document.querySelectorAll(".reveal");
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+} else {
+  revealEls.forEach(el => el.classList.add("is-visible"));
+}
+
+/* ---------- misc ---------- */
+document.getElementById("year").textContent = new Date().getFullYear();
+
+</script>
+</body>
+</html>
