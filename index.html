@@ -201,6 +201,11 @@
       const body = document.getElementById("bookingsBody");
       body.innerHTML = "";
       document.getElementById("empty").style.display = filtered.length ? "none" : "block";
+      const formatDate = v => {
+        if (!v) return "";
+        const d = new Date(v);
+        return isNaN(d) ? v : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      };
       filtered.forEach(b => {
         const tr = document.createElement("tr");
         tr.innerHTML =
@@ -209,8 +214,8 @@
           "<td>" + (b["First Name"] || "") + " " + (b["Last Name"] || "") + "<br><span style='color:#7a6f65'>" + (b["Country"] || "") + "</span></td>" +
           "<td>" + (b["Email"] || "") + "<br><span style='color:#7a6f65'>" + (b["Phone"] || "") + "</span></td>" +
           "<td>" + (b["Room"] || "") + "</td>" +
-          "<td>" + (b["Check-in"] || "") + "</td>" +
-          "<td>" + (b["Check-out"] || "") + "</td>" +
+          "<td>" + formatDate(b["Check-in"]) + "</td>" +
+          "<td>" + formatDate(b["Check-out"]) + "</td>" +
           "<td>" + (b["Nights"] || "") + "</td>" +
           "<td>ETB " + Number(b["Total"] || 0).toLocaleString() + "</td>" +
           "<td>" + (b["Requests"] || "-") + "</td>" +
